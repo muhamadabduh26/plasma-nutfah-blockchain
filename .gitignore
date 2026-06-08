@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env
+wallet/
+backend/data/
+backend/uploads/*
+!backend/uploads/.gitkeep
+*.log
