@@ -15,14 +15,23 @@
 # =============================================================================
 set -e
 
-FABRIC_SAMPLES="../fabric-samples"
+# Tentukan lokasi fabric-samples secara dinamis
+if [ -d "/root/fabric-samples" ]; then
+  FABRIC_SAMPLES="/root/fabric-samples"
+elif [ -d "../fabric-samples" ]; then
+  FABRIC_SAMPLES="../fabric-samples"
+else
+  FABRIC_SAMPLES="$HOME/fabric-samples"
+fi
+
 CC_NAME="plasma-nutfah"
 CC_PATH="$(pwd)/chaincode/plasma-nutfah"
 CHANNEL="mychannel"
 
 if [ ! -d "$FABRIC_SAMPLES/test-network" ]; then
   echo "ERROR: folder $FABRIC_SAMPLES/test-network tidak ditemukan."
-  echo "Pastikan fabric-samples berada sejajar dengan folder proyek ini."
+  echo "Lokasi pencarian: $FABRIC_SAMPLES"
+  echo "Pastikan fabric-samples terpasang dengan benar di sistem Anda."
   exit 1
 fi
 
