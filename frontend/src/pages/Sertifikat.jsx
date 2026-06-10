@@ -9,7 +9,7 @@ export default function Sertifikat() {
 
   const load = async () => {
     const all = await PlasmaAPI.listRegistrations().catch(() => []);
-    setApproved(all.filter((r) => r.status_registrasi === 'APPROVED'));
+    setApproved(all.filter((r) => r.status_registrasi === 'SUBSTANTIVE_APPROVED'));
     setCerts(await PlasmaAPI.listCertificates().catch(() => []));
   };
   useEffect(() => { load(); }, []);

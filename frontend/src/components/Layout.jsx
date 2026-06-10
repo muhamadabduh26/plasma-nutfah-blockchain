@@ -22,7 +22,7 @@ const NAV_ITEMS = {
   ],
   admin: [
     { to: '/dashboard', label: 'Dashboard', icon: '◧' },
-    { to: '/admin/users', label: 'Manajemen Pengguna', icon: '👤' },
+    { to: '/admin/users', label: 'Manajemen User', icon: '👤' },
     { to: '/admin/transactions', label: 'Audit Blockchain', icon: '🛡️' },
   ],
 };
@@ -31,8 +31,9 @@ const TITLES = {
   '/dashboard': 'Ringkasan Sistem',
   '/registrasi': 'Registrasi & Histori Varietas',
   '/sertifikat': 'Sertifikat Digital',
-  '/admin/users': 'Manajemen Pengguna Sistem',
+  '/admin/users': 'Manajemen User',
   '/admin/transactions': 'Audit Transaksi Blockchain',
+  '/profile': 'Profil Saya',
 };
 
 const ROLE_LABELS = {
@@ -86,7 +87,14 @@ export default function Layout({ children }) {
           </NavLink>
         ))}
 
-        <div className="sidebar-profile">
+        <div 
+          className="sidebar-profile" 
+          onClick={() => navigate('/profile')}
+          style={{ cursor: 'pointer', borderRadius: '12px', transition: 'background 0.2s' }}
+          onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(20,64,31,0.06)'}
+          onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+          title="Lihat Profil Saya"
+        >
           <div className="profile-avatar">{initial}</div>
           <div className="profile-info">
             <div className="profile-name">{user?.name}</div>
@@ -104,7 +112,12 @@ export default function Layout({ children }) {
           <div className="topbar-title">{TITLES[loc.pathname] || 'Sistem Plasma Nutfah'}</div>
           
           <div className="user-meta-info">
-            <div className="user-name-badge">
+            <div 
+              className="user-name-badge" 
+              onClick={() => navigate('/profile')}
+              style={{ cursor: 'pointer' }}
+              title="Ubah Profil Saya"
+            >
               <span>👤</span> {user?.name}
               <span className="user-role-badge">{ROLE_LABELS[role]}</span>
             </div>

@@ -15,7 +15,14 @@ const { hashFile, hashPlasmaData } = require('../utils/hash');
  */
 async function registerPlasma(req, res) {
     try {
-        const { nama_varietas, asal_plasma_nutfah, karakter_genetik, user_id } = req.body;
+        const {
+            nama_varietas, asal_plasma_nutfah, karakter_genetik, user_id,
+            detail_pendaftaran,
+            nomor_formulir, tanggal_formulir,
+            nomor_surat_tugas, tanggal_surat_tugas,
+            nomor_data_dukung, tanggal_data_dukung,
+            nomor_foto, tanggal_foto
+        } = req.body;
 
         if (!nama_varietas || !user_id) {
             return res.status(400).json({ error: 'nama_varietas dan user_id wajib diisi' });
@@ -30,6 +37,7 @@ async function registerPlasma(req, res) {
             nama_varietas,
             asal_plasma_nutfah,
             karakter_genetik,
+            detail_pendaftaran,
             status_registrasi: 'PENDING',
         });
 
@@ -38,31 +46,62 @@ async function registerPlasma(req, res) {
         registrasi.onchain_id = onchainId;
         await registrasi.save();
 
-        // 2. Tentukan hash dokumen: dari berkas terunggah bila ada,
-        //    bila tidak, dari data plasma yang diinput.
-        let documentHash;
-        let dokumen = null;
-        if (req.file) {
-            documentHash = hashFile(req.file.path);
-            dokumen = await Document.create({
+        // 2. Simpan dokumen-dokumen persyaratan yang diunggah.
+        const savedDocs = [];
+        const crypto = require('crypto');
+        const docHashes = {};
+
+        const fileFields = [
+            { field: 'formulir_bermaterai', nomor: nomor_formulir, tanggal: tanggal_formulir },
+            { field: 'surat_tugas', nomor: nomor_surat_tugas, tanggal: tanggal_surat_tugas },
+            { field: 'data_dukung', nomor: nomor_data_dukung, tanggal: tanggal_data_dukung },
+            { field: 'foto_karakteristik', nomor: nomor_foto, tanggal: tanggal_foto }
+        ];
+
+        for (const item of fileFields) {
+            const files = req.files || {};
+            if (files[item.field] && files[item.field][0]) {
+                const file = files[item.field][0];
+                const hash = hashFile(file.path);
+                docHashes[item.field] = hash;
+
+                const doc = await Document.create({
+                    registration_id: registrasi.registration_id,
+                    document_type: item.field,
+                    nomor_dokumen: item.nomor || '-',
+                    tanggal_terbit: item.tanggal || '-',
+                    file_name: file.originalname,
+                    file_path_ipfs: file.path,
+                    document_hash: hash,
+                });
+                savedDocs.push(doc);
+            }
+        }
+
+        // Tentukan combined hash untuk blockchain.
+        const combinedData = {
+            onchain_id: onchainId,
+            nama_varietas,
+            asal_plasma_nutfah,
+            karakter_genetik,
+            detail_pendaftaran: JSON.parse(detail_pendaftaran || '{}'),
+            doc_hashes: docHashes,
+            owner: user.wallet_address || user.email
+        };
+        const documentHash = crypto.createHash('sha256').update(JSON.stringify(combinedData)).digest('hex');
+
+        // Jika tidak ada berkas yang diunggah, simpan berkas fallback untuk database.
+        if (savedDocs.length === 0) {
+            const fallbackDoc = await Document.create({
                 registration_id: registrasi.registration_id,
-                file_name: req.file.originalname,
-                file_path_ipfs: req.file.path, // off-chain storage (lokal; dapat diganti IPFS)
-                document_hash: documentHash,
-            });
-        } else {
-            documentHash = hashPlasmaData({
-                namaVarietas: nama_varietas,
-                asalPlasmaNutfah: asal_plasma_nutfah,
-                karakterGenetik: karakter_genetik,
-                owner: user.wallet_address || user.email,
-            });
-            dokumen = await Document.create({
-                registration_id: registrasi.registration_id,
+                document_type: 'data_plasma',
+                nomor_dokumen: '-',
+                tanggal_terbit: '-',
                 file_name: 'data-plasma.json',
                 file_path_ipfs: '-',
                 document_hash: documentHash,
             });
+            savedDocs.push(fallbackDoc);
         }
 
         // 3. Submit ke blockchain (event PlasmaRegistered terpicu di chaincode).
@@ -71,7 +110,7 @@ async function registerPlasma(req, res) {
         );
 
         // 4. Catat transaksi blockchain ke database.
-        await _catatTransaksi(txInfo, dokumen.document_id);
+        await _catatTransaksi(txInfo, savedDocs[0].document_id);
 
         return res.status(201).json({
             message: 'Plasma nutfah berhasil diregistrasi ke blockchain',

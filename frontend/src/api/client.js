@@ -17,13 +17,18 @@ api.interceptors.request.use(
 export const PlasmaAPI = {
   // Auth
   login: (email, password) => api.post('/auth/login', { email, password }).then((r) => r.data),
+  registerUser: (data) => api.post('/auth/register', data).then((r) => r.data),
 
   // Dashboard
   stats: () => api.get('/dashboard/stats').then((r) => r.data),
 
   // User
   users: () => api.get('/users').then((r) => r.data),
+  getUser: (id) => api.get(`/users/${id}`).then((r) => r.data),
   createUser: (data) => api.post('/users', data).then((r) => r.data),
+  activateUser: (id) => api.post(`/users/${id}/activate`).then((r) => r.data),
+  deactivateUser: (id) => api.post(`/users/${id}/deactivate`).then((r) => r.data),
+  updateUser: (id, data) => api.put(`/users/${id}`, data).then((r) => r.data),
   
   // Audit Blockchain
   transactions: () => api.get('/transactions').then((r) => r.data),

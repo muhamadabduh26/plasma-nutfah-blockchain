@@ -4,4 +4,5 @@ dist/
 wallet/
 backend/data/
 backend/uploads/certificates/
+backend/uploads/ 
 *.log

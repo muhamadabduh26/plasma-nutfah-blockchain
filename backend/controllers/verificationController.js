@@ -1,5 +1,6 @@
 'use strict';
 
+const { Op } = require('sequelize');
 const { VarietasRegistration, Document } = require('../models');
 const fabric = require('../fabric/fabricGateway');
 const { _catatTransaksi } = require('./registrationController');
@@ -33,7 +34,17 @@ async function verifyAdmin(req, res) {
         registrasi.status_registrasi = isApproved ? 'ADMIN_APPROVED' : 'REJECTED';
         await registrasi.save();
 
-        const dokumen = await Document.findOne({ where: { registration_id: registrasi.registration_id } });
+        // Cari berkas formulir bermaterai utama jika ada
+        let dokumen = await Document.findOne({
+            where: {
+                registration_id: registrasi.registration_id,
+                file_name: { [Op.like]: '[Formulir Bermaterai]%' }
+            }
+        });
+        if (!dokumen) {
+            dokumen = await Document.findOne({ where: { registration_id: registrasi.registration_id } });
+        }
+
         if (dokumen) await _catatTransaksi(txInfo, dokumen.document_id);
 
         return res.json({
@@ -77,7 +88,17 @@ async function verifySubstantive(req, res) {
         registrasi.status_registrasi = isApproved ? 'SUBSTANTIVE_APPROVED' : 'REJECTED';
         await registrasi.save();
 
-        const dokumen = await Document.findOne({ where: { registration_id: registrasi.registration_id } });
+        // Cari berkas formulir bermaterai utama jika ada
+        let dokumen = await Document.findOne({
+            where: {
+                registration_id: registrasi.registration_id,
+                file_name: { [Op.like]: '[Formulir Bermaterai]%' }
+            }
+        });
+        if (!dokumen) {
+            dokumen = await Document.findOne({ where: { registration_id: registrasi.registration_id } });
+        }
+
         if (dokumen) await _catatTransaksi(txInfo, dokumen.document_id);
 
         return res.json({

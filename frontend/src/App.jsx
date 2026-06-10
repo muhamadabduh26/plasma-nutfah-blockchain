@@ -8,6 +8,7 @@ import Sertifikat from './pages/Sertifikat';
 import Login from './pages/Login';
 import UserManagement from './pages/UserManagement';
 import AuditBlockchain from './pages/AuditBlockchain';
+import Profile from './pages/Profile';
 
 function ProtectedRoute({ children, allowedRoles }) {
   const { isAuthenticated, user } = useAuth();
@@ -55,6 +56,15 @@ function AppContent() {
           element={
             <ProtectedRoute allowedRoles={['peneliti', 'validator_admin', 'validator_substantif', 'validator_final', 'admin']}>
               <Sertifikat />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute allowedRoles={['peneliti', 'validator_admin', 'validator_substantif', 'validator_final', 'admin']}>
+              <Profile />
             </ProtectedRoute>
           }
         />

@@ -12,11 +12,27 @@ const sequelize = require('../config/database');
 // ---------------- USER ----------------
 const User = sequelize.define('User', {
     user_id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    name: { type: DataTypes.STRING },
+    name: { type: DataTypes.STRING }, // Penanggung Jawab atau nama pendaftar
     email: { type: DataTypes.STRING, unique: true },
     password: { type: DataTypes.STRING }, // password hash SHA-256
     wallet_address: { type: DataTypes.STRING },
     role: { type: DataTypes.STRING, defaultValue: 'peneliti' }, // peneliti | validator | admin
+    
+    // Field Registrasi Baru sesuai Panduan PVTPP 2020
+    npwp: { type: DataTypes.STRING },
+    no_ktp: { type: DataTypes.STRING },
+    username: { type: DataTypes.STRING, unique: true },
+    jenis_pemohon: { type: DataTypes.STRING }, // Instansi Pemerintah | Perguruan Tinggi | Perorangan | Badan Usaha Berbadan Hukum
+    nama_institusi: { type: DataTypes.STRING }, // Nama Perusahaan/Institusi
+    penanggung_jawab: { type: DataTypes.STRING },
+    provinsi: { type: DataTypes.STRING },
+    kabupaten_kota: { type: DataTypes.STRING },
+    kecamatan: { type: DataTypes.STRING },
+    kelurahan: { type: DataTypes.STRING },
+    alamat: { type: DataTypes.TEXT },
+    kode_pos: { type: DataTypes.STRING },
+    status_akun: { type: DataTypes.STRING, defaultValue: 'TIDAK_AKTIF' }, // TIDAK_AKTIF | AKTIF
+
     last_login: { type: DataTypes.DATE },
 }, { tableName: 'USER', timestamps: false });
 
@@ -27,6 +43,7 @@ const VarietasRegistration = sequelize.define('VarietasRegistration', {
     nama_varietas: { type: DataTypes.STRING },
     asal_plasma_nutfah: { type: DataTypes.TEXT },
     karakter_genetik: { type: DataTypes.TEXT },
+    detail_pendaftaran: { type: DataTypes.TEXT }, // JSON string menyimpan form detail Gambar 12
     status_registrasi: { type: DataTypes.STRING, defaultValue: 'PENDING' },
     onchain_id: { type: DataTypes.STRING }, // ID yang dipakai di ledger (mis. REG-0001)
     created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
@@ -36,6 +53,9 @@ const VarietasRegistration = sequelize.define('VarietasRegistration', {
 const Document = sequelize.define('Document', {
     document_id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     registration_id: { type: DataTypes.INTEGER },
+    document_type: { type: DataTypes.STRING }, // formulir_bermaterai | surat_tugas | data_dukung | foto_karakteristik
+    nomor_dokumen: { type: DataTypes.STRING },
+    tanggal_terbit: { type: DataTypes.STRING },
     file_name: { type: DataTypes.STRING },
     file_path_ipfs: { type: DataTypes.STRING }, // path off-chain (lokal/IPFS)
     document_hash: { type: DataTypes.STRING },   // hash SHA-256 (juga disimpan on-chain)

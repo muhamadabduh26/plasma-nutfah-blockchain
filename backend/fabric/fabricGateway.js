@@ -29,6 +29,44 @@ class FabricGateway {
         this._mockLedger = new Map();
         this._mockEvents = [];
         this._mockHistory = new Map();
+
+        if (this.mock) {
+            this._loadMockData();
+        }
+    }
+
+    _loadMockData() {
+        try {
+            const dataDir = path.resolve(__dirname, '../data');
+            const ledgerPath = path.join(dataDir, 'mock_ledger.json');
+            if (fs.existsSync(ledgerPath)) {
+                const data = JSON.parse(fs.readFileSync(ledgerPath, 'utf8'));
+                this._mockLedger = new Map(data);
+            }
+            const historyPath = path.join(dataDir, 'mock_history.json');
+            if (fs.existsSync(historyPath)) {
+                const data = JSON.parse(fs.readFileSync(historyPath, 'utf8'));
+                this._mockHistory = new Map(data);
+            }
+        } catch (err) {
+            console.error('[FabricGateway] Gagal memuat data mock ledger:', err);
+        }
+    }
+
+    _saveMockData() {
+        try {
+            const dataDir = path.resolve(__dirname, '../data');
+            if (!fs.existsSync(dataDir)) {
+                fs.mkdirSync(dataDir, { recursive: true });
+            }
+            const ledgerPath = path.join(dataDir, 'mock_ledger.json');
+            fs.writeFileSync(ledgerPath, JSON.stringify(Array.from(this._mockLedger.entries()), null, 2), 'utf8');
+
+            const historyPath = path.join(dataDir, 'mock_history.json');
+            fs.writeFileSync(historyPath, JSON.stringify(Array.from(this._mockHistory.entries()), null, 2), 'utf8');
+        } catch (err) {
+            console.error('[FabricGateway] Gagal menyimpan data mock:', err);
+        }
     }
 
     /** Menghubungkan ke gateway (hanya relevan pada mode nyata). */
@@ -206,6 +244,7 @@ class FabricGateway {
             throw new Error(`Fungsi ${fn} tidak dikenal (mock)`);
         }
 
+        this._saveMockData();
         return { result, txInfo: this._mockTxInfo(fn) };
     }
 

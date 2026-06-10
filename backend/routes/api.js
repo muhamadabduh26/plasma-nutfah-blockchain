@@ -21,17 +21,27 @@ const { verifyToken, authorizeRoles } = require('../middleware/authMiddleware');
 
 // ---- Authentication ----
 router.post('/auth/login', auth.login);
+router.post('/auth/register', auth.register);
 
 // ---- User & Admin Management ----
 router.post('/users', verifyToken, authorizeRoles('admin'), pub.createUser);
 router.get('/users', verifyToken, authorizeRoles('admin'), pub.listUsers);
+router.get('/users/:id', verifyToken, pub.getUser);
+router.put('/users/:id', verifyToken, pub.updateUser);
+router.post('/users/:id/activate', verifyToken, authorizeRoles('admin'), pub.activateUser);
+router.post('/users/:id/deactivate', verifyToken, authorizeRoles('admin'), pub.deactivateUser);
 router.get('/transactions', verifyToken, authorizeRoles('admin'), pub.listTransactions);
 
 // ---- Dashboard ----
 router.get('/dashboard/stats', verifyToken, authorizeRoles('admin', 'validator_admin', 'validator_substantif', 'validator_final', 'peneliti'), pub.dashboardStats);
 
 // ---- TAHAP 1: Registrasi (Peneliti/User Pengajuan) ----
-router.post('/registrations', verifyToken, authorizeRoles('peneliti'), upload.single('dokumen'), reg.registerPlasma);
+router.post('/registrations', verifyToken, authorizeRoles('peneliti'), upload.fields([
+    { name: 'formulir_bermaterai', maxCount: 1 },
+    { name: 'surat_tugas', maxCount: 1 },
+    { name: 'data_dukung', maxCount: 1 },
+    { name: 'foto_karakteristik', maxCount: 1 }
+]), reg.registerPlasma);
 router.get('/registrations', verifyToken, authorizeRoles('peneliti', 'validator_admin', 'validator_substantif', 'validator_final', 'admin'), reg.listRegistrations);
 router.get('/registrations/:id', verifyToken, authorizeRoles('peneliti', 'validator_admin', 'validator_substantif', 'validator_final', 'admin'), reg.getRegistration);
 router.post('/registrations/:id/cancel', verifyToken, authorizeRoles('peneliti', 'admin'), reg.cancelRegistration);

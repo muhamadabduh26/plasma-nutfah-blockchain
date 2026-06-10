@@ -416,3 +416,193 @@ textarea { resize: vertical; min-height: 84px; }
   padding: 40px 24px;
   flex: 1;
 }
+
+/* ---------- Search, Filter, & Pagination ---------- */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: #fdfdfd;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.filter-search {
+  flex: 1;
+  min-width: 250px;
+  position: relative;
+}
+.filter-search input {
+  padding-left: 38px;
+}
+.filter-search i {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 16px;
+}
+.filter-selects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.filter-selects select {
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  min-width: 140px;
+  background-color: var(--white);
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pagination-info {
+  font-size: 13.5px;
+  color: var(--muted);
+}
+.pagination-limit {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+}
+.pagination-limit select {
+  width: auto;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+/* ---------- Timeline (Aktivitas Terbaru) ---------- */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  position: relative;
+  padding-left: 20px;
+  margin-top: 10px;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 4px;
+  bottom: 4px;
+  width: 2px;
+  background: var(--line);
+}
+.timeline-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.timeline-dot {
+  position: absolute;
+  left: -20px;
+  top: 4px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--white);
+  border: 3px solid var(--leaf);
+  box-shadow: 0 0 0 3px var(--bg);
+}
+.timeline-dot.success { border-color: var(--leaf); }
+.timeline-dot.warning { border-color: var(--gold); }
+.timeline-dot.danger { border-color: var(--danger); }
+.timeline-dot.info { border-color: var(--blue); }
+
+.timeline-content {
+  font-size: 13.5px;
+  color: var(--ink);
+  line-height: 1.4;
+}
+.timeline-time {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+/* ---------- Tooltip, Cards, and General UI tweaks ---------- */
+.tooltip-btn {
+  position: relative;
+  padding: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.tooltip-btn::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-6px);
+  background: #111;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.15s ease;
+  z-index: 100;
+}
+.tooltip-btn:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-2px);
+}
+
+.announcement-item {
+  border-bottom: 1px solid var(--line);
+  padding: 12px 0;
+}
+.announcement-item:last-child {
+  border-bottom: none;
+}
+.announcement-item h4 {
+  font-size: 14px;
+  color: var(--forest-2);
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+.announcement-item p {
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+/* Redesigned Stat trends */
+.stat-trend {
+  font-size: 11.5px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.18);
+  font-weight: 500;
+  display: inline-block;
+  margin-top: 6px;
+}
+
+/* Chart card enhancements */
+.chart-card {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+}
+

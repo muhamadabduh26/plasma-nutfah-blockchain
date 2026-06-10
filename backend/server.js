@@ -32,7 +32,7 @@ app.use('/api', apiRoutes);
 async function start() {
     try {
         await sequelize.authenticate();
-        await sequelize.sync({ alter: true }); // menyesuaikan tabel bila ada kolom baru
+        await sequelize.sync(); // Sinkronisasi database
         console.log('[DB] Database off-chain siap.');
 
         // Seed user contoh agar aplikasi langsung dapat dipakai.
@@ -41,11 +41,11 @@ async function start() {
         const jumlah = await User.count();
         if (jumlah === 0) {
             await User.bulkCreate([
-                { name: 'Dr. Rahmi (Peneliti)', email: 'rahmi@balai.go.id', password: defaultPasswordHash, wallet_address: '0xPENELITI01', role: 'peneliti' },
-                { name: 'Ahmad (Verifikator Administrasi)', email: 'admin_pvt@pertanian.go.id', password: defaultPasswordHash, wallet_address: '0xVAL_ADMIN1', role: 'validator_admin' },
-                { name: 'Prof. Budi (Pemeriksa Substantif)', email: 'ahli_pvt@pertanian.go.id', password: defaultPasswordHash, wallet_address: '0xVAL_SUBST1', role: 'validator_substantif' },
-                { name: 'Dr. Ir. H. Suwandi (Kepala Balai PPVTPP)', email: 'kepala_pvt@pertanian.go.id', password: defaultPasswordHash, wallet_address: '0xVAL_FINAL1', role: 'validator_final' },
-                { name: 'Admin Sistem', email: 'admin@plasma.go.id', password: defaultPasswordHash, wallet_address: '0xADMIN0001', role: 'admin' },
+                { name: 'Dr. Rahmi (Peneliti)', email: 'rahmi@balai.go.id', password: defaultPasswordHash, wallet_address: '0xPENELITI01', role: 'peneliti', status_akun: 'AKTIF' },
+                { name: 'Ahmad (Verifikator Administrasi)', email: 'admin_pvt@pertanian.go.id', password: defaultPasswordHash, wallet_address: '0xVAL_ADMIN1', role: 'validator_admin', status_akun: 'AKTIF' },
+                { name: 'Prof. Budi (Pemeriksa Substantif)', email: 'ahli_pvt@pertanian.go.id', password: defaultPasswordHash, wallet_address: '0xVAL_SUBST1', role: 'validator_substantif', status_akun: 'AKTIF' },
+                { name: 'Dr. Ir. H. Suwandi (Kepala Balai PPVTPP)', email: 'kepala_pvt@pertanian.go.id', password: defaultPasswordHash, wallet_address: '0xVAL_FINAL1', role: 'validator_final', status_akun: 'AKTIF' },
+                { name: 'Admin Sistem', email: 'admin@plasma.go.id', password: defaultPasswordHash, wallet_address: '0xADMIN0001', role: 'admin', status_akun: 'AKTIF' },
             ]);
             console.log('[DB] User contoh dibuat.');
         } else {
@@ -67,4 +67,4 @@ async function start() {
     }
 }
 
-start();
+start(); // Trigger reload
